@@ -19,9 +19,6 @@ jobs:
       - name: Filter commits
         id: filter
         run: |
-          # Fetch all history to ensure we can check all commits
-          git fetch --prune --unshallow
-
           # Initialize a flag to determine if we should run subsequent jobs
           SHOULD_RUN="false"
 
