@@ -20,6 +20,9 @@ jobs:
   release:
     needs: conventional-commits
     name: Release
+    with:
+      fetch-depth: 0
+      persist-credentials: false
     permissions:
       contents: write
       issues: write
