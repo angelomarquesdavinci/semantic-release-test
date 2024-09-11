@@ -17,37 +17,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Optional, for private repositories.
           allowed-commit-types: "feat,fix" # Optional, set if you want a subset of commit types to be allowed.
 
-  filter-commits:
-    runs-on: ubuntu-latest
-    outputs:
-      should-run: ${{ steps.filter.outputs.should-run }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0 # Ensures all commits are fetched
-
-      - name: Filter commits
-        id: filter
-        run: |
-          # Initialize a flag to determine if we should run subsequent jobs
-          SHOULD_RUN="false"
-
-          # Loop through commit messages since last push
-          for COMMIT_HASH in $(git rev-list ${{ github.event.before }}..${{ github.event.after }}); do
-            COMMIT_MSG=$(git log -1 --format=%B $COMMIT_HASH)
-            if [[ "$COMMIT_MSG" =~ ^(feat|fix): ]]; then
-              SHOULD_RUN="true"
-              break
-            fi
-          done
-
-          echo "SHOULD_RUN=$SHOULD_RUN" >> $GITHUB_ENV
-          echo "::set-output name=result::$SHOULD_RUN"
-
   release:
     needs: conventional-commits
-    if: needs.filter-commits.outputs.should-run == 'true'
     name: Release
     permissions:
       contents: write
